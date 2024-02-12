@@ -82,6 +82,7 @@ public class SerialHandler : MonoBehaviour
         int plus = 0;
         int minus = 0;
         double preRoll = 0;
+        double roll_diff = 0;
 
         // COMPortŠm”F
         // string[] ports = SerialPort.GetPortNames();
@@ -130,22 +131,20 @@ public class SerialHandler : MonoBehaviour
                     //     yaw -= 360;
                     // }
 
-                    if (preRoll * this.roll <= 0)
+                    if (preRoll != 0)
                     {
-                        if (Mathf.Abs((float)this.roll) > 150)
+                        roll_diff = this.roll - preRoll;
+                        if (roll_diff > 180)
                         {
-                            if (preRoll < 0)
-                            {
-                                minus++;
-                            }
-                            else if (preRoll > 0)
-                            {
-                                plus++;
-                            }
+                            roll -= 360;
+
                         }
-                        preRoll = this.roll;
-                    }
-                    this.roll += (plus - minus) * 360;
+                        else if (roll_diff < -180)
+                        {
+                                this.roll += 360;
+                        }
+                     }
+                    
 
                     // Check
                     // Debug.Log($"roll:{roll}");
