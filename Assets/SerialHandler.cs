@@ -79,8 +79,6 @@ public class SerialHandler : MonoBehaviour
 
     private void Read()
     {
-        int plus = 0;
-        int minus = 0;
         double preRoll = 0;
         double roll_diff = 0;
 
@@ -112,19 +110,13 @@ public class SerialHandler : MonoBehaviour
                     this.pitch = (buffer[start + 3] * Math.Pow(2, 8) + buffer[start + 2]) / 32768.0 * 180;
                     this.yaw = (buffer[start + 5] * Math.Pow(2, 8) + buffer[start + 4]) / 32768.0 * 180;
 
-
-                    // センサ値を[-180,180]に変換する
-                    if (this.roll > 180)
-                    {
-                        this.roll -= 360;
-                    }
                     // センサ値を[0→90→0],[0→-90→0]に変換する
                     if (this.pitch > 180)
                     {
                         this.pitch -= 360;
                     }
 
-                    Debug.Log(this.pitch);
+                    
 
                     // センサ値を[-180,180]に変換する
                     // if (yaw > 180) {
@@ -136,8 +128,7 @@ public class SerialHandler : MonoBehaviour
                         roll_diff = this.roll - preRoll;
                         if (roll_diff > 180)
                         {
-                            roll -= 360;
-
+                            this.roll -= 360;
                         }
                         else if (roll_diff < -180)
                         {
@@ -146,7 +137,9 @@ public class SerialHandler : MonoBehaviour
                      }
 
                     preRoll = this.roll;
-                    
+
+                    Debug.Log(this.pitch);
+                    //Debug.Log(this.roll);
 
                     // Check
                     // Debug.Log($"roll:{roll}");
