@@ -144,6 +144,8 @@ public class SerialHandler : MonoBehaviour
                                 this.roll += 360;
                         }
                      }
+
+                    preRoll = this.roll;
                     
 
                     // Check
