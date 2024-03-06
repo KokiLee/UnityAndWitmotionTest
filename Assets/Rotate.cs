@@ -18,7 +18,7 @@ public class Rotate : MonoBehaviour
         Vector3 worldAngle = myTransform.eulerAngles;
         worldAngle.x = (float)serialHandler.pitch;
         worldAngle.z = (float)serialHandler.roll;
-        worldAngle.y = 0;
+        worldAngle.y = (float)serialHandler.yaw;
         myTransform.eulerAngles = worldAngle;
     }
 }

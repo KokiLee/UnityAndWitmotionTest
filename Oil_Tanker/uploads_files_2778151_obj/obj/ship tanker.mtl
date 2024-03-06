@@ -1,0 +1,56 @@
+# Blender MTL File: '3idts.blend'
+# Material Count: 5
+
+newmtl ship_tanker_glass
+Ns 900.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.027451 0.035294 0.035294
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl ship_tanker_hull_deck
+Ns 67.178361
+Ka 1.000000 1.000000 1.000000
+Kd 0.588000 0.588000 0.588000
+Ks 0.360000 0.360000 0.360000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Bump -bm 0.050000 C:\\Users\\YoRHa\\Desktop\\boat\\Ship_Tanker_SpyrosK_FBX\\fbx\\texture\\ship_tanker_main_ref.jpg
+map_Kd C:\\Users\\YoRHa\\Desktop\\boat\\Ship_Tanker_SpyrosK_FBX\\fbx\\texture\\ship_tanker_main.jpg
+map_Ks C:\\Users\\YoRHa\\Desktop\\boat\\Ship_Tanker_SpyrosK_FBX\\fbx\\texture\\ship_tanker_main_ref.jpg
+
+newmtl ship_tanker_propeller
+Ns 18.000005
+Ka 1.000000 1.000000 1.000000
+Kd 0.250980 0.152941 0.011765
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl ship_tanker_rails
+Ns 88.642372
+Ka 1.000000 1.000000 1.000000
+Kd 0.278431 0.341176 0.392157
+Ks 0.920000 0.920000 0.920000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl ship_tanker_superstructure
+Ns 109.131595
+Ka 1.000000 1.000000 1.000000
+Kd 0.588000 0.588000 0.588000
+Ks 0.640000 0.640000 0.640000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:\\Users\\YoRHa\\Desktop\\boat\\Ship_Tanker_SpyrosK_FBX\\fbx\\texture\\ship_tanker_top.jpg

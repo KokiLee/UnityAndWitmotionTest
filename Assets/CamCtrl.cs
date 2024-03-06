@@ -23,7 +23,7 @@ public class CamCtrl : MonoBehaviour
 
         float sensitiveMove = 5.0f;
         float sensitiveRotate = 5.0f;
-        float sensitiveZoom = 10.0f;
+        float sensitiveZoom = 50.0f;
 
         if (Input.GetMouseButton(0))
         {
@@ -40,8 +40,8 @@ public class CamCtrl : MonoBehaviour
             float rotateX = Input.GetAxis("Mouse X") * sensitiveRotate;
             float rotateY = Input.GetAxis("Mouse Y") * sensitiveRotate;
             // cam.transform.Rotate(rotateY, rotateX, 0.0f);
-            cam.transform.RotateAround(targetobject.transform.position, Vector3.right, rotateX);
             cam.transform.RotateAround(targetobject.transform.position, Vector3.forward, rotateY);
+            cam.transform.RotateAround(targetobject.transform.position, Vector3.right, rotateX);
         }
 
         // zoom camera

@@ -10,10 +10,7 @@ public class SerialHandler : MonoBehaviour
     public delegate void SerialDataReceivedEventHandler(string message);
     public event SerialDataReceivedEventHandler OnDataReceived;
 
-
-
-    //ポート名
-    public string portName = "COM3";// 自分の使用したいセンサを確認し，適切なCOM番号に変更してください
+    public string portName = "COM3";
     public int baudRate = 9600;
 
     private SerialPort serialPort_;
@@ -77,10 +74,31 @@ public class SerialHandler : MonoBehaviour
 
     }
 
+    private static double AdjustData(double previous_data, double current_data)
+    {
+
+        if (previous_data != 0)
+        {
+            double data_diff = current_data - previous_data;
+            if (data_diff > 180.0)
+            {
+                current_data -= 360.0;
+            }
+            else if (data_diff < -180.0)
+            {
+                current_data += 360.0;
+            }
+        }
+
+        return current_data;
+    
+    }
+
     private void Read()
     {
         double preRoll = 0;
-        double roll_diff = 0;
+        double prePitch = 0;
+        double preYaw = 0;
 
         // COMPort確認
         // string[] ports = SerialPort.GetPortNames();
@@ -95,6 +113,7 @@ public class SerialHandler : MonoBehaviour
                 serialPort_.Read(buffer, 0, buffer.Length);
 
                 isNewMessageReceived_ = true;
+
             }
             catch (System.Exception e)
             {
@@ -109,42 +128,11 @@ public class SerialHandler : MonoBehaviour
                     this.roll = (buffer[start + 1] * Math.Pow(2, 8) + buffer[start + 0]) / 32768.0 * 180;
                     this.pitch = (buffer[start + 3] * Math.Pow(2, 8) + buffer[start + 2]) / 32768.0 * 180;
                     this.yaw = (buffer[start + 5] * Math.Pow(2, 8) + buffer[start + 4]) / 32768.0 * 180;
-
-                    // センサ値を[0→90→0],[0→-90→0]に変換する
-                    if (this.pitch > 180)
-                    {
-                        this.pitch -= 360;
-                    }
-
                     
 
-                    // センサ値を[-180,180]に変換する
-                    // if (yaw > 180) {
-                    //     yaw -= 360;
-                    // }
-
-                    if (preRoll != 0)
-                    {
-                        roll_diff = this.roll - preRoll;
-                        if (roll_diff > 180)
-                        {
-                            this.roll -= 360;
-                        }
-                        else if (roll_diff < -180)
-                        {
-                                this.roll += 360;
-                        }
-                     }
-
-                    preRoll = this.roll;
-
-                    Debug.Log(this.pitch);
-                    //Debug.Log(this.roll);
-
-                    // Check
-                    // Debug.Log($"roll:{roll}");
-                    // Debug.Log($"pitch:{pitch}");
-                    // Debug.Log($"yaw:{yaw}");
+                    this.pitch = SerialHandler.AdjustData(prePitch, this.pitch);
+                    this.roll = SerialHandler.AdjustData(preRoll, this.roll);
+                    this.yaw = SerialHandler.AdjustData(preYaw, this.yaw);
                 }
             }
         }
