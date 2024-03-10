@@ -11,6 +11,7 @@ public class CamCtrl : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
+        cam.transform.LookAt(targetobject.transform.position);
     }
 
     // Update is called once per frame
@@ -29,23 +30,20 @@ public class CamCtrl : MonoBehaviour
         {
             // move camera
             float moveX = Input.GetAxis("Mouse X") * sensitiveMove;
-            float moveY = Input.GetAxis("Mouse Y") * sensitiveMove;
-            // cam.transform.localPosition -= new Vector3(moveX, moveY, 0.0f);
             cam.transform.RotateAround(targetobject.transform.position, Vector3.up, moveX);
 
         }
         else if (Input.GetMouseButton(1))
         {
             // rotate camera
-            float rotateX = Input.GetAxis("Mouse X") * sensitiveRotate;
-            float rotateY = Input.GetAxis("Mouse Y") * sensitiveRotate;
-            // cam.transform.Rotate(rotateY, rotateX, 0.0f);
-            cam.transform.RotateAround(targetobject.transform.position, Vector3.forward, rotateY);
-            cam.transform.RotateAround(targetobject.transform.position, Vector3.right, rotateX);
+            float rotateY = -Input.GetAxis("Mouse Y") * sensitiveRotate;
+            cam.transform.RotateAround(targetobject.transform.position, Vector3.right, rotateY);
         }
 
         // zoom camera
         float moveZ = Input.GetAxis("Mouse ScrollWheel") * sensitiveZoom;
         cam.transform.position += cam.transform.forward * moveZ;
+
+        cam.transform.LookAt(targetobject.transform.position);
     }
 }

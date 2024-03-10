@@ -15,19 +15,22 @@ public class SerialHandler : MonoBehaviour
 
     private SerialPort serialPort_;
     private Thread thread_;
-    private bool isRunning_ = false;
+    public bool isRunning_ = false;
 
     public Queue cmds = new Queue();
 
 
     private string message_;
-    private bool isNewMessageReceived_ = false;
+    private volatile bool isNewMessageReceived_ = false;
 
-    private string msg = "";
-    public double roll = 0.0, pitch = 0.0, yaw = 0.0;
+    //private string msg = "";
+
+    public delegate void PortOpenedHandler();
+    public event PortOpenedHandler OnPortOpened;
+
 
     byte[] buffer = new byte[100];
-    int cnt = 0;
+    //int cnt = 0;
 
     void Awake()
     {
@@ -54,6 +57,8 @@ public class SerialHandler : MonoBehaviour
 
         thread_ = new Thread(Read);
         thread_.Start();
+
+        OnPortOpened?.Invoke();
     }
 
     private void Close()
@@ -66,74 +71,57 @@ public class SerialHandler : MonoBehaviour
             thread_.Join();
         }
 
-        if (serialPort_ != null && serialPort_.IsOpen)
+        if (serialPort_ != null)
         {
-            serialPort_.Close();
-            serialPort_.Dispose();
-        }
-
-    }
-
-    private static double AdjustData(double previous_data, double current_data)
-    {
-
-        if (previous_data != 0)
-        {
-            double data_diff = current_data - previous_data;
-            if (data_diff > 180.0)
+            try
             {
-                current_data -= 360.0;
+                if (serialPort_.IsOpen)
+                {
+                    serialPort_.Close();
+                }
             }
-            else if (data_diff < -180.0)
+            finally
             {
-                current_data += 360.0;
+                serialPort_.Dispose();
             }
         }
 
-        return current_data;
-    
     }
 
     private void Read()
     {
-        double preRoll = 0;
-        double prePitch = 0;
-        double preYaw = 0;
-
-        // COMPortŠm”F
-        // string[] ports = SerialPort.GetPortNames();
-        // foreach(string port in ports){
-        //     // Debug.Log(port);
-        // }
 
         while (isRunning_ && serialPort_ != null && serialPort_.IsOpen)
         {
             try
             {
-                serialPort_.Read(buffer, 0, buffer.Length);
+                if (serialPort_.BytesToRead > 0)
+                {
+                    Array.Clear(buffer, 0, buffer.Length);
 
-                isNewMessageReceived_ = true;
+                    int bytesRead = serialPort_.Read(buffer, 0, buffer.Length);
 
+                    byte[] receiveData = new byte[bytesRead];
+                    Array.Copy(buffer, receiveData, bytesRead);
+
+                    lock (cmds)
+                    {
+                        cmds.Enqueue(receiveData);
+                    }
+
+                    isNewMessageReceived_ = true;
+                }
             }
+
+            catch (ThreadAbortException)
+            {
+                break;
+            }
+
             catch (System.Exception e)
             {
                 Debug.LogWarning(e.Message);
-            }
-
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                if (buffer[i] == 0x55 && buffer[i + 1] == 0x53)
-                {
-                    int start = i + 2;
-                    this.roll = (buffer[start + 1] * Math.Pow(2, 8) + buffer[start + 0]) / 32768.0 * 180;
-                    this.pitch = (buffer[start + 3] * Math.Pow(2, 8) + buffer[start + 2]) / 32768.0 * 180;
-                    this.yaw = (buffer[start + 5] * Math.Pow(2, 8) + buffer[start + 4]) / 32768.0 * 180;
-                    
-
-                    this.pitch = SerialHandler.AdjustData(prePitch, this.pitch);
-                    this.roll = SerialHandler.AdjustData(preRoll, this.roll);
-                    this.yaw = SerialHandler.AdjustData(preYaw, this.yaw);
-                }
+                continue;
             }
         }
     }

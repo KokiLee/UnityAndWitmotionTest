@@ -5,7 +5,7 @@ public class inputtext : MonoBehaviour
 {
 
     public InputField inputField;
-    public Text text;
+    public Text portName;
 
     public SerialHandler serialHandler;
 
@@ -13,22 +13,22 @@ public class inputtext : MonoBehaviour
     void Start()
     {
         inputField = inputField.GetComponent<InputField>();
-        text = text.GetComponent<Text>();
+        portName = portName.GetComponent<Text>();
     }
 
     public void Inputtext()
     {
-        text.text = inputField.text;
+        portName.text = inputField.text;
 
-        serialHandler.portName = string.Format(inputField.text);
+        if (!string.IsNullOrEmpty(portName.text))
+        {
+            serialHandler.portName = string.Format(inputField.text);
 
-        serialHandler.Open();
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+            serialHandler.Open();
+        }
+        else
+        {
+            Debug.LogWarning("Not input portName.");
+        }
     }
 }

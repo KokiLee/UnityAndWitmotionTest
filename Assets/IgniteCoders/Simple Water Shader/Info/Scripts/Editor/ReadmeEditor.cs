@@ -153,4 +153,3 @@ public class ReadmeEditor : Editor
         return GUI.Button(position, label, LinkStyle);
     }
 }
-

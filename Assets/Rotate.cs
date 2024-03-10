@@ -2,12 +2,7 @@ using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-    public SerialHandler serialHandler;
-
-    void Start()
-    {
-        // 
-    }
+    public DataParser dataParser;
 
     void Update()
     {
@@ -16,9 +11,12 @@ public class Rotate : MonoBehaviour
 
         // ワールド座標を基準に、回転を取得
         Vector3 worldAngle = myTransform.eulerAngles;
-        worldAngle.x = (float)serialHandler.pitch;
-        worldAngle.z = (float)serialHandler.roll;
-        worldAngle.y = (float)serialHandler.yaw;
+        worldAngle.x = (float)dataParser.pitch;
+
+        worldAngle.z = (float)dataParser.roll;
+
+        worldAngle.y = (float)dataParser.yaw;
+
         myTransform.eulerAngles = worldAngle;
     }
 }
