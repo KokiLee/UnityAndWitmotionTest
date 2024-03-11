@@ -69,9 +69,9 @@ public class DataParser : MonoBehaviour
                 {
                     if (data[i] == 0x55 && data[i + 1] == 0x53)
                     {
-                        roll = ((data[i + 3] << 8) | data[i + 2]) / 32768.0 * 180;
-                        pitch = ((data[i + 5] << 8) | data[i + 4]) / 32768.0 * 180;
-                        yaw = ((data[i + 7] << 8) | data[i + 6]) / 32768.0 * 180;
+                        roll = ((data[i + 3] << 8) | data[i + 2]) / 32768.0 * 180.0;
+                        pitch = ((data[i + 5] << 8) | data[i + 4]) / 32768.0 * 180.0;
+                        yaw = ((data[i + 7] << 8) | data[i + 6]) / 32768.0 * 180.0;
 
                         roll = AdjustData(preRoll, roll);
                         preRoll = roll;
@@ -82,7 +82,7 @@ public class DataParser : MonoBehaviour
                         yaw = AdjustData(preYaw, yaw);
                         preYaw = yaw;
 
-                        Debug.Log("Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw);
+                        //Debug.Log("Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw);
 
                     }
                 }

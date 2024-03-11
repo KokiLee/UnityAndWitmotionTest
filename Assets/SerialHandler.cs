@@ -32,10 +32,10 @@ public class SerialHandler : MonoBehaviour
     byte[] buffer = new byte[100];
     //int cnt = 0;
 
-    void Awake()
-    {
-        Open();
-    }
+    //void Awake()
+    //{
+    //    Open();
+    //}
 
     void Update()
     {
@@ -47,7 +47,7 @@ public class SerialHandler : MonoBehaviour
         Close();
     }
 
-    public void Open()
+    private void Open()
     {
         serialPort_ = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
         serialPort_.Open();
@@ -58,6 +58,7 @@ public class SerialHandler : MonoBehaviour
         thread_ = new Thread(Read);
         thread_.Start();
 
+        // Notification port is open
         OnPortOpened?.Invoke();
     }
 
@@ -86,6 +87,18 @@ public class SerialHandler : MonoBehaviour
             }
         }
 
+    }
+
+    public void OpenPortWithNewName(string newPortname)
+    {
+        if (serialPort_ != null && serialPort_.IsOpen)
+        {
+            Close();
+        }
+
+        portName = newPortname;
+
+        Open();
     }
 
     private void Read()

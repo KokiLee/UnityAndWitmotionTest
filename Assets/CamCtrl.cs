@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CamCtrl : MonoBehaviour
 {
@@ -31,7 +32,6 @@ public class CamCtrl : MonoBehaviour
             // move camera
             float moveX = Input.GetAxis("Mouse X") * sensitiveMove;
             cam.transform.RotateAround(targetobject.transform.position, Vector3.up, moveX);
-
         }
         else if (Input.GetMouseButton(1))
         {

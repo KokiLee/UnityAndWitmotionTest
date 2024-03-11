@@ -24,7 +24,7 @@ public class inputtext : MonoBehaviour
         {
             serialHandler.portName = string.Format(inputField.text);
 
-            serialHandler.Open();
+            serialHandler.OpenPortWithNewName(portName.text);
         }
         else
         {
