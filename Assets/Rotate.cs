@@ -1,20 +1,47 @@
 using UnityEngine;
+using System.IO;
 
 public class Rotate : MonoBehaviour
 {
     public DataParser dataParser;
 
+    public float limitedPitch = 30f;
+    public float limitedRoll = 10f;
+    public float limitedYaw = 360f;
+
+
+    private void Start()
+    {
+        LoadLimitValues();
+    }
+
+    void LoadLimitValues()
+    {
+        string filePath = Path.Combine(Application.dataPath, "../Settings/limited_values.json");
+        if (File.Exists(filePath))
+        {
+            Debug.Log("File found: " + filePath);
+            string dataAsJson = File.ReadAllText(filePath);
+            LimitSettings settings = JsonUtility.FromJson<LimitSettings>(dataAsJson);
+            limitedPitch = settings.limitedPitch;
+            limitedRoll = settings.limitedRoll;
+            limitedYaw = settings.limitedYaw;
+        }
+        else
+        {
+            Debug.LogError("Cannot find camera settings file.");
+        }
+    }
+
     void Update()
     {
-        // transformを取得
         Transform myTransform = this.transform;
 
+        float pitch = Mathf.Clamp((float)dataParser.pitch, -limitedPitch, limitedPitch);
+        float roll = Mathf.Clamp((float)dataParser.roll, -limitedRoll, limitedRoll);
+        float yaw = Mathf.Clamp((float)dataParser.yaw, -limitedYaw, limitedYaw);
 
-        float pitch = Mathf.Clamp((float)dataParser.pitch, -30f, 30f);
-        float roll = Mathf.Clamp((float)dataParser.roll, -10f, 10f);
-        float yaw = Mathf.Clamp((float)dataParser.yaw, -360f, 360f);
-
-        // ワールド座標を基準に、回転を取得
+        // Get rotation based on world coordinates.
         Vector3 worldAngle = myTransform.eulerAngles;
         worldAngle.x = pitch;
 

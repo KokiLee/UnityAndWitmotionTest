@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.IO.Ports;
 using System.Threading;
@@ -23,23 +24,32 @@ public class SerialHandler : MonoBehaviour
     private string message_;
     private volatile bool isNewMessageReceived_ = false;
 
-    //private string msg = "";
-
     public delegate void PortOpenedHandler();
     public event PortOpenedHandler OnPortOpened;
 
-
     byte[] buffer = new byte[100];
-    //int cnt = 0;
 
-    //void Awake()
-    //{
-    //    Open();
-    //}
-
-    void Update()
+    void Start()
     {
-        // nothing
+        LoadSerialSettings();
+        OpenPortWithNewName(portName);
+    }
+
+    private void LoadSerialSettings()
+    {
+        string path = Path.Combine(Application.dataPath, "../Settings/serial_settings.json");
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SerialSettings settings = JsonUtility.FromJson<SerialSettings>(json);
+            portName = settings.portName;
+            baudRate = settings.baudRate;
+            Debug.Log(portName + baudRate);
+        }
+        else
+        {
+            Debug.LogError("Not find settings file");
+        }
     }
 
     void OnDestroy()

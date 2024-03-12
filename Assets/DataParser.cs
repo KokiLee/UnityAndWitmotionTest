@@ -58,7 +58,6 @@ public class DataParser : MonoBehaviour
                 if (serialHandler.cmds.Count > 0)
                 {
                     data = (byte[])serialHandler.cmds.Dequeue();
-                    //Debug.Log(System.BitConverter.ToString(data) + "deta qua: " + serialHandler.cmds.Count);
                 }
             }
 
@@ -81,9 +80,6 @@ public class DataParser : MonoBehaviour
 
                         yaw = AdjustData(preYaw, yaw);
                         preYaw = yaw;
-
-                        //Debug.Log("Roll: " + roll + ", Pitch: " + pitch + ", Yaw: " + yaw);
-
                     }
                 }
             }
