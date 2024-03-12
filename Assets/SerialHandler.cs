@@ -35,6 +35,28 @@ public class SerialHandler : MonoBehaviour
         OpenPortWithNewName(portName);
     }
 
+    private void TryReconnect()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            try
+            {
+                OpenPortWithNewName(portName);
+                if (serialPort_.IsOpen)
+                {
+                    Debug.Log("Reconnected to serial port.");
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Failed to reconnect: {e.Message}");
+                Thread.Sleep(1000);
+            }
+        }
+        Debug.LogError("Failed to reconnect to serial port.");
+    }
+
     private void LoadSerialSettings()
     {
         string path = Path.Combine(Application.dataPath, "../Settings/serial_settings.json");
@@ -140,7 +162,13 @@ public class SerialHandler : MonoBehaviour
             {
                 break;
             }
-
+            //catch (IOException)
+            //{
+            //    Debug.LogWarning("Serial port disconnected.");
+            //    Close();
+            //    TryReconnect();
+            //    break;
+            //}
             catch (System.Exception e)
             {
                 Debug.LogWarning(e.Message);
