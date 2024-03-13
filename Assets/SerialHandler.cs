@@ -18,7 +18,7 @@ public class SerialHandler : MonoBehaviour
     private Thread thread_;
     public bool isRunning_ = false;
 
-    public Queue cmds = new Queue();
+    public Queue cmds = new();
 
 
     private string message_;
@@ -31,6 +31,7 @@ public class SerialHandler : MonoBehaviour
 
     void Start()
     {
+        Screen.fullScreen = true;
         LoadSerialSettings();
         OpenPortWithNewName(portName);
     }
@@ -57,7 +58,7 @@ public class SerialHandler : MonoBehaviour
         Debug.LogError("Failed to reconnect to serial port.");
     }
 
-    private void LoadSerialSettings()
+    public void LoadSerialSettings()
     {
         string path = Path.Combine(Application.dataPath, "../Settings/serial_settings.json");
         if (File.Exists(path))
@@ -66,7 +67,6 @@ public class SerialHandler : MonoBehaviour
             SerialSettings settings = JsonUtility.FromJson<SerialSettings>(json);
             portName = settings.portName;
             baudRate = settings.baudRate;
-            Debug.Log(portName + baudRate);
         }
         else
         {

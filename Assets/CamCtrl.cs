@@ -4,8 +4,7 @@ using UnityEngine.UI;
 public class CamCtrl : MonoBehaviour
 {
     private Camera cam;
-    private Vector3 startPos;
-    private Vector3 startAngle;
+
     public GameObject targetobject;
 
     // Start is called before the first frame update

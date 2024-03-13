@@ -27,7 +27,7 @@ public class FreeCamCtrl : MonoBehaviour
         LoadCameraSettings();
     }
 
-    void LoadCameraSettings()
+    public void LoadCameraSettings()
     {
         string filePath = Path.Combine(Application.dataPath, "../Settings/camera_settings.json");
         if (File.Exists(filePath))

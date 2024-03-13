@@ -15,14 +15,14 @@ public class Rotate : MonoBehaviour
         LoadLimitValues();
     }
 
-    void LoadLimitValues()
+    public void LoadLimitValues()
     {
-        string filePath = Path.Combine(Application.dataPath, "../Settings/limited_values.json");
+        string filePath = Path.Combine(Application.dataPath, "../Settings/limit_angle_settings.json");
         if (File.Exists(filePath))
         {
             Debug.Log("File found: " + filePath);
             string dataAsJson = File.ReadAllText(filePath);
-            LimitSettings settings = JsonUtility.FromJson<LimitSettings>(dataAsJson);
+            LimitAngleSettings settings = JsonUtility.FromJson<LimitAngleSettings>(dataAsJson);
             limitedPitch = settings.limitedPitch;
             limitedRoll = settings.limitedRoll;
             limitedYaw = settings.limitedYaw;
@@ -43,7 +43,7 @@ public class Rotate : MonoBehaviour
 
         // Get rotation based on world coordinates.
         Vector3 worldAngle = myTransform.eulerAngles;
-        worldAngle.x = pitch;
+        worldAngle.x = -pitch;
 
         worldAngle.z = roll;
 

@@ -11,7 +11,7 @@ public class DataParser : MonoBehaviour
     private double preRoll = 0;
     private double prePitch = 0;
     private double preYaw = 0;
-    private double testpreRoll = 0;
+
     // Start is called before the first frame update
     private void Start()
     {
