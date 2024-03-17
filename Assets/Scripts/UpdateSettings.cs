@@ -4,10 +4,16 @@ public class UpdateSettings : MonoBehaviour
 {
 
     public FreeCamCtrl freeCamCtrl;
-    public SerialHandler serialHandler;
+    public ISerialHandler serialHandler;
     public Rotate rotate;
     public TransFormPosition transFormPosition;
-
+    void Start()
+    {
+        if (serialHandler == null)
+        {
+            serialHandler = FindObjectOfType<SerialHandler>();
+        }
+    }
     public void UpdateJson()
     {
         if (freeCamCtrl != null) freeCamCtrl.LoadCameraSettings();

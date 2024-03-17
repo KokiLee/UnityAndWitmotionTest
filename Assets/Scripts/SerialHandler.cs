@@ -2,9 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.IO.Ports;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
-
 
 public class SerialHandler : MonoBehaviour, ISerialHandler
 {
@@ -13,8 +13,7 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
 
     private SerialPort serialPort_;
     private Thread thread_;
-    public bool IsRunning_ { get; set; } = false;
-    
+
 
     // Thread safe queue
     public ConcurrentQueue<byte[]> cmds { get; set; } = new();
@@ -22,8 +21,26 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
     private string message_;
     private volatile bool isNewMessageReceived_ = false;
 
-    public delegate void PortOpenedHandler();
-    public event PortOpenedHandler OnPortOpened;
+
+    //public delegate void PortOpenedHandler();
+    //public event PortOpenedHandler OnSerialStatusChanged;
+
+    private bool isRunning;
+    public delegate void SerialStatusChangedHandler(bool isRunning);
+    public event SerialStatusChangedHandler OnSerialStatusChanged;
+    public bool IsRunning_
+    {
+        get { return isRunning; }
+        set
+        {
+            if (isRunning != value)
+            {
+                isRunning = value;
+                OnSerialStatusChanged?.Invoke(isRunning);
+            }
+        }
+    }
+
 
     byte[] buffer = new byte[100];
 
@@ -60,21 +77,43 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
     {
         try
         {
-            serialPort_ = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One);
+            string[] availablePorts = SerialPort.GetPortNames();
+            if (!availablePorts.Contains(portName))
+            {
+                Debug.LogError($"Port {portName} is not available.");
+                return;
+            }
+            serialPort_ = new SerialPort(portName, baudRate, Parity.None, 8, StopBits.One)
+            {
+                ReadTimeout = 50
+            };
             serialPort_.Open();
-            serialPort_.ReadTimeout = 50;
+            Debug.Log("Port Open");
 
             IsRunning_ = true;
 
             thread_ = new Thread(Read);
             thread_.Start();
-
-            // Notification port is open
-            OnPortOpened?.Invoke();
+        }
+        catch (UnauthorizedAccessException e)
+        {
+            Debug.LogError($"UnauthorizedAccessException: {e.Message}");
+            IsRunning_ = false;
+        }
+        catch (IOException e)
+        {
+            Debug.LogError($"IOException: {e.Message}");
+            IsRunning_ = false;
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogError($"ArgumentException: {e.Message}");
+            IsRunning_ = false;
         }
         catch (Exception e)
         {
-            Debug.LogWarning($"Failed to open serial port {portName}: {e.Message}");
+            Debug.LogError($"Failed to open serial port {portName}: {e.Message}");
+            IsRunning_ = false;
         }
     }
 
@@ -95,11 +134,13 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
                 if (serialPort_.IsOpen)
                 {
                     serialPort_.Close();
+                    Debug.Log("Port Close");
                 }
             }
             finally
             {
                 serialPort_.Dispose();
+                Debug.Log("Port Dispose");
             }
         }
 
@@ -113,6 +154,7 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
         }
 
         portName = newPortname;
+        Debug.Log("test123");
 
         Open();
     }
@@ -121,7 +163,6 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
     {
         while (IsRunning_ && serialPort_ != null && serialPort_.IsOpen)
         {
-
             try
             {
                 if (serialPort_.BytesToRead > 0)
@@ -136,7 +177,11 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
                     cmds.Enqueue(receiveData);
 
                     isNewMessageReceived_ = true;
-                    
+
+                }
+                else
+                {
+                    Thread.Sleep(50);
                 }
             }
 
@@ -144,12 +189,20 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
             {
                 break;
             }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning(e.Message);
-                IsRunning_ = false;
-                Close();
-            }
+            //catch (IOException e)
+            //{
+            //    Debug.LogWarning($"IOException caught: {e.Message}");
+            //    IsRunning_ = false;
+            //    Close();
+            //    break;
+            //}
+            //catch (System.Exception e)
+            //{
+            //    Debug.LogWarning(e.Message);
+            //    IsRunning_ = false;
+            //    Close();
+            //    break;
+            //}
         }
     }
 

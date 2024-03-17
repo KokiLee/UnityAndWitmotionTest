@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Concurrent;
+
 
 public interface ISerialHandler
 {
@@ -7,9 +7,10 @@ public interface ISerialHandler
     void OpenPortWithNewName(string portName);
     void Close();
 
-    event SerialHandler.PortOpenedHandler OnPortOpened;
+    event SerialHandler.SerialStatusChangedHandler OnSerialStatusChanged;
     ConcurrentQueue<byte[]> cmds { get; }
 
-    void EnqueueData(byte[] data);
 
+    void EnqueueData(byte[] data);
+    void LoadSerialSettings();
 }

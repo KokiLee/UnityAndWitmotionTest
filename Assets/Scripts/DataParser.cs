@@ -1,8 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 
 public class DataParser : MonoBehaviour
@@ -16,7 +13,9 @@ public class DataParser : MonoBehaviour
     private double preYaw = 0;
 
     public bool isCoroutineRunning = false;
-
+    private bool startCoroutineFlag = false;
+    private bool stopCoroutineFlag = false;
+    private Coroutine processDataCoroutine;
     private void Awake()
     {
         serialHandler = GetComponent<SerialHandler>();
@@ -27,22 +26,58 @@ public class DataParser : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    private void Start()
+    private void OnEnable()
     {
-        serialHandler.OnPortOpened += StartProcessingData;
+        //serialHandler.OnPortOpened += StartProcessingData;
+        serialHandler.OnSerialStatusChanged += SerialStatusChanged;
         Debug.Log($"Start, serial: {serialHandler}, {serialHandler.IsRunning_}");
     }
 
-    private void StartProcessingData()
+    private void OnDisable()
     {
-        StartCoroutine(ProcessDataCoroutine());
+        serialHandler.OnSerialStatusChanged -= SerialStatusChanged;
     }
 
+    private void Update()
+    {
+        if (startCoroutineFlag)
+        {
+            if (processDataCoroutine == null)
+            {
+                processDataCoroutine = StartCoroutine(ProcessDataCoroutine());
+            }
+            startCoroutineFlag = false;
+        }
+
+        if (stopCoroutineFlag)
+        {
+            if (processDataCoroutine != null)
+            {
+                StopCoroutine(processDataCoroutine);
+                processDataCoroutine = null;
+            }
+            stopCoroutineFlag = false;
+        }
+    }
+
+    private void SerialStatusChanged(bool isRunning)
+    {
+        if (isRunning)
+        {
+            startCoroutineFlag = true;
+            stopCoroutineFlag = false;
+        }
+        else
+        {
+            stopCoroutineFlag = true;
+            startCoroutineFlag = false;
+        }
+    }
 
 
     private void OnDestroy()
     {
-        serialHandler.OnPortOpened -= StartProcessingData;
+        serialHandler.OnSerialStatusChanged -= SerialStatusChanged;
     }
 
     private static double AdjustData(double previous_data, double current_data)
@@ -66,16 +101,15 @@ public class DataParser : MonoBehaviour
     public IEnumerator ProcessDataCoroutine()
     {
 
-        byte[] data;
         Debug.Log("ProcessDataCoroutine has started.");
 
         while (serialHandler.IsRunning_)
         {
 
-            while (serialHandler.cmds.TryDequeue(out data))
+            try
             {
 
-                try
+                while (serialHandler.cmds.TryDequeue(out byte[] data))
                 {
                     for (int i = 0; i < data.Length - 1; i++)
                     {
@@ -110,18 +144,22 @@ public class DataParser : MonoBehaviour
 
                     }
                 }
-                catch (System.Exception e)
-                {
-                    Debug.LogWarning(e.Message);
-                }
             }
+
+            catch (System.Exception e)
+            {
+
+                Debug.LogWarning(e.Message);
+
+            }
+
 
             yield return null;
 
         }
 
         Debug.Log("ProcessDataCoroutine ended.");
-    
+
     }
 
 }
