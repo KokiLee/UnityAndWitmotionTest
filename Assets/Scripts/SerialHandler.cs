@@ -17,8 +17,7 @@ public class SerialHandler : MonoBehaviour
     
 
     // Thread safe queue
-    public ConcurrentQueue<byte[]> cmds = new();
-    //Action ISerialHandler.OnPortOpened { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public ConcurrentQueue<byte[]> cmds { get; set; } = new();
 
     private string message_;
     private volatile bool isNewMessageReceived_ = false;
@@ -147,7 +146,6 @@ public class SerialHandler : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogWarning(e.Message);
-                continue;
             }
         }
     }

@@ -108,9 +108,12 @@ public class DataParser : MonoBehaviour
                 }
             }
 
-            Debug.Log("ProcessDataCoroutine ended.");
             yield return null;
-        }  
+
+        }
+
+        Debug.Log("ProcessDataCoroutine ended.");
+    
     }
 
 }
