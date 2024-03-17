@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 
 public class DataParser : MonoBehaviour
 {
-    public SerialHandler serialHandler;
+    public ISerialHandler serialHandler;
 
     public double roll = 0.0, pitch = 0.0, yaw = 0.0;
 
@@ -16,6 +16,15 @@ public class DataParser : MonoBehaviour
     private double preYaw = 0;
 
     public bool isCoroutineRunning = false;
+
+    private void Awake()
+    {
+        serialHandler = GetComponent<SerialHandler>();
+        if (serialHandler == null)
+        {
+            serialHandler = gameObject.AddComponent<SerialHandler>();
+        }
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -104,7 +113,6 @@ public class DataParser : MonoBehaviour
                 catch (System.Exception e)
                 {
                     Debug.LogWarning(e.Message);
-                    continue;
                 }
             }
 

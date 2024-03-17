@@ -6,7 +6,7 @@ using System.Threading;
 using UnityEngine;
 
 
-public class SerialHandler : MonoBehaviour
+public class SerialHandler : MonoBehaviour, ISerialHandler
 {
     public string portName = "COM3";
     public int baudRate = 9600;
@@ -78,7 +78,7 @@ public class SerialHandler : MonoBehaviour
         }
     }
 
-    private void Close()
+    public void Close()
     {
         isNewMessageReceived_ = false;
         IsRunning_ = false;
@@ -121,6 +121,7 @@ public class SerialHandler : MonoBehaviour
     {
         while (IsRunning_ && serialPort_ != null && serialPort_.IsOpen)
         {
+
             try
             {
                 if (serialPort_.BytesToRead > 0)
@@ -146,6 +147,8 @@ public class SerialHandler : MonoBehaviour
             catch (System.Exception e)
             {
                 Debug.LogWarning(e.Message);
+                IsRunning_ = false;
+                Close();
             }
         }
     }
@@ -167,4 +170,9 @@ public class SerialHandler : MonoBehaviour
         }
     }
 
+    // Use this method for testing only
+    public void EnqueueData(byte[] data)
+    {
+        cmds.Enqueue(data);
+    }
 }
