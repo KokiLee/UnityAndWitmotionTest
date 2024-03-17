@@ -1,6 +1,9 @@
-using System.Collections;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using UnityEngine;
+using UnityEngine.TestTools;
+
 
 public class DataParser : MonoBehaviour
 {
@@ -12,16 +15,21 @@ public class DataParser : MonoBehaviour
     private double prePitch = 0;
     private double preYaw = 0;
 
+    public bool isCoroutineRunning = false;
+
     // Start is called before the first frame update
     private void Start()
     {
         serialHandler.OnPortOpened += StartProcessingData;
+        Debug.Log($"Start, serial: {serialHandler}, {serialHandler.IsRunning_}");
     }
 
     private void StartProcessingData()
     {
         StartCoroutine(ProcessDataCoroutine());
     }
+
+
 
     private void OnDestroy()
     {
@@ -46,29 +54,29 @@ public class DataParser : MonoBehaviour
         return current_data;
     }
 
-    IEnumerator ProcessDataCoroutine()
+    public IEnumerator ProcessDataCoroutine()
     {
 
-        while (serialHandler.isRunning_)
+        byte[] data;
+        Debug.Log("ProcessDataCoroutine has started.");
+
+        while (serialHandler.IsRunning_)
         {
-            byte[] data = null;
-            lock (serialHandler.cmds)
-            {
-                if (serialHandler.cmds.Count > 0)
-                {
-                    data = (byte[])serialHandler.cmds.Dequeue();
-                }
-            }
 
-            if (data != null)
+            while (serialHandler.cmds.TryDequeue(out data))
             {
+                string dataString = System.BitConverter.ToString(data);
+                Debug.Log($"ReceiveData: {dataString}, QueueCount: {serialHandler.cmds.Count}");
 
-                for (int i = 0; i < data.Length - 1; i++)
+                try
                 {
-                    if (data.Length >= 6)
+                    for (int i = 0; i < data.Length - 1; i++)
                     {
+
                         if (data[i] == 0x55 && data[i + 1] == 0x53)
                         {
+
+                            if (i + 7 >= data.Length) continue;
 
                             byte[] roll_L_H = { data[i + 2], data[i + 3] };
                             short combined_roll = System.BitConverter.ToInt16(roll_L_H, 0);
@@ -92,13 +100,19 @@ public class DataParser : MonoBehaviour
                             yaw = AdjustData(preYaw, yaw);
                             preYaw = yaw;
                         }
+
                     }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning(e.Message);
+                    continue;
                 }
             }
 
+            Debug.Log("ProcessDataCoroutine ended.");
             yield return null;
-
-        }
+        }  
     }
 
 }

@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.IO;
+using UnityEngine;
+using UnityEngine.UI;
 
 
 [Serializable]
@@ -43,7 +43,7 @@ public class FreeCamCtrl : MonoBehaviour
         {
             Debug.LogError("Cannot find camera settings file.");
         }
-        
+
     }
 
     void Update()

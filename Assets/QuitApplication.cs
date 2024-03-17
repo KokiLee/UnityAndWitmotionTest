@@ -7,9 +7,9 @@ public class QuitApplication : MonoBehaviour
 
         Debug.Log("Quit method called"); // ÉçÉOèoóÕ
 
-        #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-        #endif
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
 
 
         Application.Quit();

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 public class UpdateSettings : MonoBehaviour
@@ -15,8 +12,8 @@ public class UpdateSettings : MonoBehaviour
     {
         if (freeCamCtrl != null) freeCamCtrl.LoadCameraSettings();
         if (serialHandler != null) serialHandler.LoadSerialSettings();
-        if (transFormPosition != null) transFormPosition .LoadPositionValues();
-        if (rotate != null) rotate .LoadLimitValues();
+        if (transFormPosition != null) transFormPosition.LoadPositionValues();
+        if (rotate != null) rotate.LoadLimitValues();
     }
 
 }
