@@ -65,8 +65,6 @@ public class DataParser : MonoBehaviour
 
             while (serialHandler.cmds.TryDequeue(out data))
             {
-                string dataString = System.BitConverter.ToString(data);
-                Debug.Log($"ReceiveData: {dataString}, QueueCount: {serialHandler.cmds.Count}");
 
                 try
                 {
