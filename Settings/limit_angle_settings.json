@@ -1,5 +1,5 @@
 {
     "limitedPitch": 30.0,
     "limitedRoll": 10.0,
-    "limitedYaw": 360.0
+    "limitedYaw": 0.0
 }

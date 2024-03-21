@@ -6,12 +6,12 @@ public class MockSerialHandler : ISerialHandler
     public ConcurrentQueue<byte[]> cmds { get; } = new ConcurrentQueue<byte[]>();
     public string portName { get; set; }
     public int baudRate { get; set; }
-    // ISerialHandlerインターフェイスの他のメンバーを実装する必要があります。
-    public void OpenPortWithNewName(string portName) { /* モックの振る舞いを実装 */ }
-    public void Close() { /* モックの振る舞いを実装 */ }
+
+    public void OpenPortWithNewName(string portName) { /* Implement mock behavior */ }
+    public void Close() { /* Implement mock behavior */ }
     public event SerialHandler.SerialStatusChangedHandler OnSerialStatusChanged;
 
-    // テストデータをキューに追加するためのメソッド
+    // Method for adding test data to the queue.
     public void EnqueueData(byte[] data)
     {
         cmds.Enqueue(data);
@@ -25,10 +25,16 @@ public class MockSerialHandler : ISerialHandler
 
     public void LoadSerialSettings()
     {
-        string testPortName = "COM3";
+        string testPortName = "COM1";
         int testBaudRate = 9600;
 
         this.portName = testPortName;
         this.baudRate = testBaudRate;
     }
+
+    public void OpenPort()
+    {
+        OpenPortWithNewName(this.portName);
+    }
+
 }

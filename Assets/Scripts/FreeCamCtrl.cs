@@ -88,7 +88,7 @@ public class FreeCamCtrl : MonoBehaviour
 
         if (CameraPositionText.text != null)
         {
-            CameraPositionText.text = $"Position: {transform.position}, Rotation: {transform.eulerAngles}";
+            CameraPositionText.text = $"CameraPosition: {transform.position}, CameraRotation: {transform.eulerAngles}";
         }
     }
 }

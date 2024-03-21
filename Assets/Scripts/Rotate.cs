@@ -43,11 +43,21 @@ public class Rotate : MonoBehaviour
 
         // Get rotation based on world coordinates.
         Vector3 worldAngle = myTransform.eulerAngles;
-        worldAngle.x = -pitch;
 
-        worldAngle.z = roll;
+        if (limitedPitch != 0.0)
+        {
+            worldAngle.x = -pitch;
+        }
 
-        worldAngle.y = yaw;
+        if (limitedRoll != 0.0)
+        {
+            worldAngle.z = roll;
+        }
+
+        if (limitedYaw != 0.0)
+        {
+            worldAngle.y = yaw;
+        }
 
         myTransform.eulerAngles = worldAngle;
     }
