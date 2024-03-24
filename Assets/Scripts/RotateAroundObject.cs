@@ -15,8 +15,8 @@ public class RotateAroundObject : MonoBehaviour
 
         Vector3 shipAngle = ShipObject.eulerAngles;
 
-        shipAngle.y = 90;
+        //shipAngle.y = 90;
 
-        ShipObject.eulerAngles = shipAngle;
+        //ShipObject.eulerAngles = shipAngle;
     }
 }

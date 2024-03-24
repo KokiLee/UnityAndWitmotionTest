@@ -19,11 +19,6 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
     public ConcurrentQueue<byte[]> cmds { get; set; } = new();
 
     private string message_;
-    //private volatile bool isNewMessageReceived_ = false;
-
-
-    //public delegate void PortOpenedHandler();
-    //public event PortOpenedHandler OnSerialStatusChanged;
 
     private bool isRunning;
     public delegate void SerialStatusChangedHandler(bool isRunning);
@@ -124,12 +119,16 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
 
     public void Close()
     {
-        //isNewMessageReceived_ = false;
         IsRunning_ = false;
 
         if (thread_ != null && thread_.IsAlive)
         {
-            thread_.Join();
+            thread_.Interrupt();
+
+            if (!thread_.Join(1000))
+            {
+                Debug.LogWarning("Thread did not finish in time");
+            }
         }
 
         if (serialPort_ != null)
@@ -180,8 +179,6 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
 
                     cmds.Enqueue(receiveData);
 
-                    //isNewMessageReceived_ = true;
-
                 }
                 else
                 {
@@ -194,18 +191,18 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
                 Close();
                 break;
             }
-            //catch (IOException e)
-            //{
-            //    Debug.LogWarning($"IOException caught: {e.Message}");
-            //    IsRunning_ = false;
-            //    Close();
-            //}
-            //catch (System.Exception e)
-            //{
-            //    Debug.LogWarning(e.Message);
-            //    IsRunning_ = false;
-            //    Close();
-            //}
+            catch (IOException e)
+            {
+                Debug.LogWarning($"IOException caught: {e.Message}");
+                IsRunning_ = false;
+                Close();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning(e.Message);
+                IsRunning_ = false;
+                Close();
+            }
         }
     }
 

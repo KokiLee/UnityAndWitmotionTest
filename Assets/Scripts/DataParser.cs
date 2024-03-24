@@ -28,7 +28,6 @@ public class DataParser : MonoBehaviour
     // Start is called before the first frame update
     private void OnEnable()
     {
-        //serialHandler.OnPortOpened += StartProcessingData;
         serialHandler.OnSerialStatusChanged += SerialStatusChanged;
         Debug.Log($"Start, serial: {serialHandler}, {serialHandler.IsRunning_}");
     }

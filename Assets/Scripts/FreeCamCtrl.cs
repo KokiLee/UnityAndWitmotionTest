@@ -2,14 +2,10 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 
 
-[Serializable]
-public class CameraSettings
-{
-    public Vector3 position;
-    public Vector3 rotation;
-}
+
 public class FreeCamCtrl : MonoBehaviour
 {
     private Camera cam;
@@ -18,9 +14,11 @@ public class FreeCamCtrl : MonoBehaviour
     public float rotateSpeed = 5.0f;
     public float panSpeed = 0.5f;
     public float zoomSpeed = 50.0f;
+    public bool fxaaEnable = false;
 
     public Text CameraPositionText;
 
+    public bool isCameraContorolEnabled = true;
     void Start()
     {
         cam = GetComponent<Camera>();
@@ -37,7 +35,23 @@ public class FreeCamCtrl : MonoBehaviour
             CameraSettings settings = JsonUtility.FromJson<CameraSettings>(dataAsJson);
             transform.position = settings.position;
             transform.eulerAngles = settings.rotation;
-            Debug.Log(transform.position);
+
+            cam.fieldOfView = settings.fieldOfView;
+            cam.farClipPlane = settings.clippingPlanesFar;
+            cam.nearClipPlane = settings.clippingPlanesNear;
+
+            fxaaEnable = settings.fxaaEnable;
+
+            var cameraData = cam.GetUniversalAdditionalCameraData();
+
+            if (fxaaEnable)
+            {
+                cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
+            }
+            else
+            {
+                cameraData.antialiasing = AntialiasingMode.None;
+            }
         }
         else
         {
@@ -48,6 +62,11 @@ public class FreeCamCtrl : MonoBehaviour
 
     void Update()
     {
+        if (!isCameraContorolEnabled)
+        {
+            return;
+        }
+
         if (cam == null)
         {
             return;

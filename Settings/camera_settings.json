@@ -8,5 +8,9 @@
     "x": 9.55,
     "y": 165.91,
     "z": 0
-  }
+  },
+  "fieldOfView": 72.0,
+  "clippingPlanesFar": 6000.0,
+  "clippingPlanesNear": 0.3,
+  "fxaaEnable": true
 }
