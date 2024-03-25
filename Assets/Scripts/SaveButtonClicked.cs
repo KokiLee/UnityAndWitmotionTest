@@ -23,7 +23,7 @@ public class SaveButtonClicked : MonoBehaviour
         float newLimitRoll = rotate.limitedRollSlider.value;
         float newLimitYaw = rotate.limitedYawSlider.value;
 
-        string newPortName = serial.portName;
+        string newPortName = serial.serialPortName.text;
 
         formPosition.UpdateSettings(newPositionY, newRotationY);
         freeCamCtrl.UpdateSettings(newPlanesFar, newFieldOfView, newFxaaEnable);

@@ -49,7 +49,7 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
         Screen.fullScreen = true;
         LoadSerialSettings();
         OpenPortWithNewName(portName);
-        serialPortName.text = portName;
+
         serialPortName.onEndEdit.AddListener(delegate { SettingPort();});
     }
 
@@ -94,6 +94,7 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
             SerialSettings settings = JsonUtility.FromJson<SerialSettings>(json);
             portName = settings.portName;
             baudRate = settings.baudRate;
+            serialPortName.text = portName;
             OpenPortWithNewName(portName);
         }
         else
