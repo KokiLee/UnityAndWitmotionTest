@@ -8,6 +8,7 @@ public class SaveButtonClicked : MonoBehaviour
     public TransFormPosition formPosition;
     public FreeCamCtrl freeCamCtrl;
     public Rotate rotate;
+    public SerialHandler serial;
 
     public void OnUpdateButtonClicked()
     {
@@ -22,9 +23,12 @@ public class SaveButtonClicked : MonoBehaviour
         float newLimitRoll = rotate.limitedRollSlider.value;
         float newLimitYaw = rotate.limitedYawSlider.value;
 
+        string newPortName = serial.portName;
+
         formPosition.UpdateSettings(newPositionY, newRotationY);
         freeCamCtrl.UpdateSettings(newPlanesFar, newFieldOfView, newFxaaEnable);
         rotate.UpdateSettings(newLimitPitch, newLimitRoll, newLimitYaw);
+        serial.UpdateSettings(newPortName);
     }
     public void OnCameraUpdateButtonClicked()
     {
