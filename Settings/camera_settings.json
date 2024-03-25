@@ -1,16 +1,1 @@
-﻿{
-  "position": {
-    "x": -29.56,
-    "y": 83.54,
-    "z": 216.84
-  },
-  "rotation": {
-    "x": 9.55,
-    "y": 165.91,
-    "z": 0
-  },
-  "fieldOfView": 72.0,
-  "clippingPlanesFar": 6000.0,
-  "clippingPlanesNear": 0.3,
-  "fxaaEnable": true
-}
+{"position":{"x":3.4382638931274416,"y":74.17938995361328,"z":237.8745574951172},"rotation":{"x":9.550000190734864,"y":175.9633026123047,"z":-0.0000010551598279562314},"fieldOfView":72.0,"clippingPlanesFar":6000.0,"clippingPlanesNear":0.30000001192092898,"fxaaEnable":true}

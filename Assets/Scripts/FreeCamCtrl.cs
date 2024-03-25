@@ -1,8 +1,8 @@
-using System;
 using System.IO;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 
 
@@ -18,16 +18,124 @@ public class FreeCamCtrl : MonoBehaviour
 
     public Text CameraPositionText;
 
+    public Slider planesFarSlider;
+    public Slider fieldOfViewSlider;
+    public TextMeshProUGUI planesFarValue;
+    public TextMeshProUGUI filedOfViewValue;
+
+    public Toggle antiAliasingEnable;
+
+    public string filePath;
+
     public bool isCameraContorolEnabled = true;
     void Start()
     {
         cam = GetComponent<Camera>();
         LoadCameraSettings();
+        planesFarSlider.onValueChanged.AddListener(delegate { SettingFar(); });
+        planesFarSlider.value = cam.farClipPlane;
+
+        fieldOfViewSlider.onValueChanged.AddListener(delegate { SettingFOV(); });
+        fieldOfViewSlider.value = cam.fieldOfView;
+
+        planesFarSlider.onValueChanged.AddListener(delegate { DisableCameraControl(); });
+        fieldOfViewSlider.onValueChanged.AddListener(delegate { DisableCameraControl(); });
+
+        antiAliasingEnable.onValueChanged.AddListener(delegate { SettingFXAA(); });
+
+    }
+
+    public void DisableCameraControl()
+    {
+        isCameraContorolEnabled = false;
+    }
+
+    public void OnSliderDragEnd()
+    {
+        isCameraContorolEnabled = true;
+    }
+
+    public void SettingFXAA()
+    {
+        var cameraData = cam.GetUniversalAdditionalCameraData();
+        if (antiAliasingEnable.isOn)
+        {
+            fxaaEnable = true;
+            cameraData.antialiasing = AntialiasingMode.FastApproximateAntialiasing;
+        }
+        else
+        {
+            fxaaEnable = false;
+            cameraData.antialiasing = AntialiasingMode.None;
+        }
+    }
+
+    public void SettingFar()
+    {
+        cam.farClipPlane = planesFarSlider.value;
+
+        planesFarValue.text = cam.farClipPlane.ToString("F0");
+    }
+
+    public void SettingFOV()
+    {
+        cam.fieldOfView = fieldOfViewSlider.value;
+
+        filedOfViewValue.text = cam.fieldOfView.ToString("F0");
+    }
+
+    public void UpdateSettings(float newPlanesFar, float newFieldOfView, bool newFxaaEnable)
+    {
+        CameraSettings settings;
+
+        if (File.Exists(filePath))
+        {
+            string dataAsJson = File.ReadAllText(filePath);
+            settings = JsonUtility.FromJson<CameraSettings>(dataAsJson);
+        }
+        else
+        {
+            Debug.LogError("Settings file not found.");
+            return;
+        }
+
+        settings.clippingPlanesFar = newPlanesFar;
+        settings.fieldOfView = newFieldOfView;
+        settings.fxaaEnable = newFxaaEnable;
+
+        string updatedJson = JsonUtility.ToJson(settings);
+        File.WriteAllText(filePath, updatedJson);
+
+        Debug.Log("Updated settings: PlanesFar and FieldOfView.");
+    }
+
+    public void UpdateCamera(Transform newTransform)
+    {
+        CameraSettings settings;
+
+        if (File.Exists(filePath))
+        {
+            string dataAsJson = File.ReadAllText(filePath);
+            settings = JsonUtility.FromJson<CameraSettings>(dataAsJson);
+        }
+        else
+        {
+            Debug.LogError("Settings file not found.");
+            return;
+        }
+
+        settings.position = newTransform.position;
+        settings.rotation = newTransform.eulerAngles;
+
+        string updatedJson = JsonUtility.ToJson(settings);
+        File.WriteAllText(filePath, updatedJson);
+
+        Debug.Log("Updated settings: Camera Position and Rotation.");
     }
 
     public void LoadCameraSettings()
     {
-        string filePath = Path.Combine(Application.dataPath, "../Settings/camera_settings.json");
+        filePath = Path.Combine(Application.dataPath, "../Settings/camera_settings.json");
         if (File.Exists(filePath))
         {
             Debug.Log("File found: " + filePath);
@@ -52,6 +160,16 @@ public class FreeCamCtrl : MonoBehaviour
             {
                 cameraData.antialiasing = AntialiasingMode.None;
             }
+
+            planesFarValue.text = cam.farClipPlane.ToString("F0");
+            filedOfViewValue.text = cam.fieldOfView.ToString("F0");
+            planesFarSlider.value = cam.farClipPlane;
+            fieldOfViewSlider.value = cam.fieldOfView;
+
+            antiAliasingEnable.isOn = fxaaEnable;
+
+            isCameraContorolEnabled = true;
+
         }
         else
         {

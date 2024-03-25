@@ -5,6 +5,8 @@ using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class SerialHandler : MonoBehaviour, ISerialHandler
 {
@@ -14,7 +16,8 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
     private SerialPort serialPort_;
     private Thread thread_;
 
-
+    public TMP_InputField serialPortName;
+    public string filePath;
     // Thread safe queue
     public ConcurrentQueue<byte[]> cmds { get; set; } = new();
 
@@ -46,14 +49,48 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
         Screen.fullScreen = true;
         LoadSerialSettings();
         OpenPortWithNewName(portName);
+        serialPortName.text = portName;
+        serialPortName.onEndEdit.AddListener(delegate { SettingPort();});
+    }
+
+    public void SettingPort()
+    {
+        portName = serialPortName.text;
+
+        serialPortName.text = portName;
+
+        OpenPortWithNewName(portName);
+    }
+
+    public void UpdateSettings(string newPortName)
+    {
+        SerialSettings settings;
+
+        if (File.Exists(filePath))
+        {
+            string dataAsJson = File.ReadAllText(filePath);
+            settings = JsonUtility.FromJson<SerialSettings>(dataAsJson);
+        }
+        else
+        {
+            Debug.LogError("Settings file not found.");
+            return;
+        }
+
+        settings.portName = newPortName;
+
+        string updatedJson = JsonUtility.ToJson(settings);
+        File.WriteAllText(filePath, updatedJson);
+
+        Debug.Log("Updated settings: PortName.");
     }
 
     public void LoadSerialSettings()
     {
-        string path = Path.Combine(Application.dataPath, "../Settings/serial_settings.json");
-        if (File.Exists(path))
+        filePath = Path.Combine(Application.dataPath, "../Settings/serial_settings.json");
+        if (File.Exists(filePath))
         {
-            string json = File.ReadAllText(path);
+            string json = File.ReadAllText(filePath);
             SerialSettings settings = JsonUtility.FromJson<SerialSettings>(json);
             portName = settings.portName;
             baudRate = settings.baudRate;
