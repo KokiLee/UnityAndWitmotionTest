@@ -18,6 +18,8 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
 
     public TMP_InputField serialPortName;
     public string filePath;
+    
+
     // Thread safe queue
     public ConcurrentQueue<byte[]> cmds { get; set; } = new();
 
@@ -55,7 +57,7 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
 
     public void SettingPort()
     {
-        portName = serialPortName.text;
+        portName = serialPortName.text.ToUpper();
 
         serialPortName.text = portName;
 
@@ -113,6 +115,8 @@ public class SerialHandler : MonoBehaviour, ISerialHandler
         try
         {
             string[] availablePorts = SerialPort.GetPortNames();
+            Debug.Log(string.Join("\n", availablePorts));
+            
 
             if (!availablePorts.Contains(portName))
             {
